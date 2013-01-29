@@ -7,6 +7,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import lsi.i18n.I18nConstants;
+
 public class ParentScreenView {
 
 	private ParentScreenController controller;
@@ -38,34 +40,34 @@ public class ParentScreenView {
 	}
 
 	private void init() {
-		frame = new JFrame("Compiler");
+		frame = new JFrame(I18nConstants.get("compiler")); 
 		
 		textArea = new JTextArea();
 		scrollPane = new JScrollPane(textArea);
 		feedbackArea = new JTextArea();
 		
 		menuBar = new JMenuBar();
-		menuFile = new JMenu("File");
-		menuLexical = new JMenu("Lexical");
-		menuSyntax = new JMenu("Syntax");
-		menuSemantic = new JMenu("Semantic");
+		menuFile = new JMenu(I18nConstants.get("file")); 
+		menuLexical = new JMenu(I18nConstants.get("lexical")); 
+		menuSyntax = new JMenu(I18nConstants.get("syntax")); 
+		menuSemantic = new JMenu(I18nConstants.get("semantic")); 
 		
 		menuBar.add(menuFile);
 		menuBar.add(menuLexical);
 		menuBar.add(menuSyntax);
 		menuBar.add(menuSemantic);
 		
-		menuItemAbout = new JMenuItem("About");
-		menuItemExit = new JMenuItem("Exit");
+		menuItemAbout = new JMenuItem(I18nConstants.get("about")); 
+		menuItemExit = new JMenuItem(I18nConstants.get("exit")); 
 		menuItemAbout.addActionListener(controller);
 		menuItemExit.addActionListener(controller);
 		
 		menuFile.add(menuItemAbout);
 		menuFile.add(menuItemExit);
 		
-		setVerifyLexical(new JMenuItem("Verify"));
-		setVerifySyntax(new JMenuItem("Verify"));
-		setVerifySemantic(new JMenuItem("Verify"));
+		setVerifyLexical(new JMenuItem(I18nConstants.get("verify"))); 
+		setVerifySyntax(new JMenuItem(I18nConstants.get("verify"))); 
+		setVerifySemantic(new JMenuItem(I18nConstants.get("verify"))); 
 		getVerifyLexical().addActionListener(controller);
 		getVerifySyntax().addActionListener(controller);
 		getVerifySemantic().addActionListener(controller);
@@ -75,8 +77,8 @@ public class ParentScreenView {
 		menuSemantic.add(getVerifySemantic());
 
 		frame.setJMenuBar(menuBar);
-		frame.add("Center", scrollPane);
-		frame.add("South", feedbackArea);
+		frame.add("Center", scrollPane); 
+		frame.add("South", feedbackArea); 
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(400, 400);

@@ -4,6 +4,7 @@ import lsi.Env;
 import lsi.errors.LexicalError;
 import lsi.errors.SemanticError;
 import lsi.errors.SyntaticError;
+import lsi.i18n.I18nConstants;
 
 public class AnalisadorSintatico {
 
@@ -38,15 +39,15 @@ public class AnalisadorSintatico {
 			sintatico.parse(lexico, semantico);
 		} catch (LexicalError e) {
 			Env.getParentScreenController().setCaretPosition(e.getPosition());
-			return e.getMessage() + " em " + e.getPosition();
+			return e.getMessage() + I18nConstants.get("at") + e.getPosition(); 
 		} catch (SyntaticError e) {
 			Env.getParentScreenController().setCaretPosition(e.getPosition());
-			return e.getMessage() + " em " + e.getPosition();
+			return e.getMessage() + I18nConstants.get("at") + e.getPosition(); 
 		} catch (SemanticError e) {
 			Env.getParentScreenController().setCaretPosition(e.getPosition());
-			return e.getMessage() + " em " + e.getPosition();
+			return e.getMessage() + I18nConstants.get("at") + e.getPosition(); 
 		}
-		return "Sem erros";
+		return I18nConstants.get("noErrors"); 
 	}
 	
 }

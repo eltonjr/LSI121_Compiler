@@ -1,4 +1,5 @@
 package lsi.constants;
+import lsi.i18n.I18nConstants;
 import lsi.identificadores.Parametro;
 
 public final class Regras implements NGC {
@@ -55,7 +56,7 @@ public final class Regras implements NGC {
 		} else if(operador == OP_E || operador == OP_OU){
 			return (operando == TIPO_BOOL);
 		} else {
-			System.err.println("[Regras] isCompativelComOperador : operador="+operador+" operando="+operando);
+			System.err.println(I18nConstants.get("rulesMessage1")+operador+I18nConstants.get("rulesMessage2")+operando);
 			return false;
 		}
 	}

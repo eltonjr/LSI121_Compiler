@@ -10,6 +10,7 @@ import lsi.constants.Constants;
 import lsi.constants.NGC;
 import lsi.constants.Regras;
 import lsi.errors.SemanticError;
+import lsi.i18n.I18nConstants;
 import lsi.identificadores.Constante;
 import lsi.identificadores.Funcao;
 import lsi.identificadores.Identificador;
@@ -68,7 +69,7 @@ public class Semantico implements Constants, NGC {
 	}
 
 	public void executeAction(int action, Token token) throws SemanticError {
-		System.out.println("Ação #" + action + ", Token: " + token);
+		System.out.println(I18nConstants.get("actionAction") + action + I18nConstants.get("actionToken") + token);  
 
 		switch (action) {
 		case 100:
@@ -305,14 +306,14 @@ public class Semantico implements Constants, NGC {
 		if (token != null) {
 			TDS.adicionarPrograma(token.getLexeme());
 		} else {
-			TDS.adicionarPrograma("inicio");
+			TDS.adicionarPrograma(I18nConstants.get("begin")); 
 		}
 	}
 
 	// 101
 	private void verificaExistenciaDeIDSenaoCria(Token token, long tipoId) throws SemanticError {
 		if (iDJaDeclaradoNoMesmoNivel(token)) {
-			throw new SemanticError("Id " + token.getLexeme() + " já declarado",
+			throw new SemanticError(I18nConstants.get("id") + token.getLexeme() + I18nConstants.get("alreadyDeclared"),  
 					token.getPosition());
 		} else {
 			pilhaIdentificadoresDeclarados.push(new Identificador(token.getLexeme(), tipoId,
@@ -325,12 +326,12 @@ public class Semantico implements Constants, NGC {
 		Identificador ultimoDeclarado = pilhaIdentificadoresDeclarados.pop();
 		if (tipoConst == tipoAtual && ultimoDeclarado.getCategoria() == ID_CONST) {
 			if (tipoAtual == TIPO_CARACTERE && token.getLexeme().length() > 3) {
-				throw new SemanticError("Caracter maior do que permitido", token.getPosition());
+				throw new SemanticError(I18nConstants.get("charLongerThanAllowed"), token.getPosition()); 
 			}
 			getTSAtual().adicionarConstante(ultimoDeclarado.getNome(), pilhaNivel.size(),
 					tipoAtual, token.getLexeme());
 		} else {
-			throw new SemanticError("Tipo de constante inválido", token.getPosition());
+			throw new SemanticError(I18nConstants.get("invalidConstType"), token.getPosition()); 
 		}
 	}
 
@@ -351,7 +352,7 @@ public class Semantico implements Constants, NGC {
 	// 106 e 109
 	private void declaraMetodo(Token token, long tipo) throws SemanticError {
 		if (iDJaDeclarado(token)) {
-			throw new SemanticError("Id " + token.getLexeme() + " já declarado",
+			throw new SemanticError(I18nConstants.get("id") + token.getLexeme() + I18nConstants.get("alreadyDeclared"),  
 					token.getPosition());
 		} else {
 			declarouRetorno = false;
@@ -389,7 +390,7 @@ public class Semantico implements Constants, NGC {
 				|| (pilhaNivel.peek().getCategoria() == ID_FUNC && declarouRetorno)) {
 			pilhaNivel.pop();
 		} else {
-			throw new SemanticError("Função não declarou retorno", token.getPosition());
+			throw new SemanticError(I18nConstants.get("funcDoesntHasReturn"), token.getPosition()); 
 		}
 	}
 
@@ -425,7 +426,7 @@ public class Semantico implements Constants, NGC {
 	private void declaraID(Token token) throws SemanticError {
 		if (contexto == LID_DECL) {
 			if (iDJaDeclaradoNoMesmoNivel(token)) {
-				throw new SemanticError("Id já declarado", token.getPosition());
+				throw new SemanticError(I18nConstants.get("idAlreadyDeclared"), token.getPosition()); 
 			} else {
 				pilhaVariaveisDeclaradas.push(new Identificador(token.getLexeme(), ID_VAR,
 						pilhaNivel.size()));
@@ -433,12 +434,12 @@ public class Semantico implements Constants, NGC {
 		} else if (contexto == LID_PARFORMAL) {
 			for (Parametro current : listaParametrosFormais) {
 				if (current.getNome().equals(token.getLexeme())) {
-					throw new SemanticError("Id já declarado", token.getPosition());
+					throw new SemanticError(I18nConstants.get("idAlreadyDeclared"), token.getPosition()); 
 				}
 			}
 			for (Parametro current : listaParametrosAux) {
 				if (current.getNome().equals(token.getLexeme())) {
-					throw new SemanticError("Id já declarado", token.getPosition());
+					throw new SemanticError(I18nConstants.get("idAlreadyDeclared"), token.getPosition()); 
 				}
 			}
 			Parametro p = new Parametro(token.getLexeme(), pilhaNivel.size(), 0, mpp, -1);
@@ -448,7 +449,7 @@ public class Semantico implements Constants, NGC {
 				pilhaLeituraDeclarados.push(new Identificador(token.getLexeme(), ID_CONST,
 						pilhaNivel.size()));
 			} else {
-				throw new SemanticError("Id não declarado", token.getPosition());
+				throw new SemanticError(I18nConstants.get("idNotDeclared"), token.getPosition()); 
 			}
 		}
 	}
@@ -458,14 +459,14 @@ public class Semantico implements Constants, NGC {
 		if (iDJaDeclarado(token)) {
 			Identificador id = getId(token);
 			if (id.getCategoria() != ID_CONST) {
-				throw new SemanticError("Esperava-se um id de Constante", token.getPosition());
+				throw new SemanticError(I18nConstants.get("constIdExpected"), token.getPosition()); 
 			} else {
 				Constante c = (Constante) id;
 				tipoConst = c.getTipo();
 				valConst = c.getValor();
 			}
 		} else {
-			throw new SemanticError("Id não declarado", token.getPosition());
+			throw new SemanticError(I18nConstants.get("idNotDeclared"), token.getPosition()); 
 		}
 	}
 
@@ -475,7 +476,7 @@ public class Semantico implements Constants, NGC {
 			tipoConstLimInf = tipoConst;
 			valConstLimInf = valConst;
 		} else {
-			throw new SemanticError("Const deveria ser int ou char", token.getPosition());
+			throw new SemanticError(I18nConstants.get("constShouldBeIntOrChar"), token.getPosition()); 
 		}
 	}
 
@@ -488,16 +489,16 @@ public class Semantico implements Constants, NGC {
 			tipoAtual = TIPO_INTERVALO;
 			subcategoriaAtual = new SubcategoriaIntervalo(valConstLimInf, valConst, tipoAtual);
 		} else {
-			throw new SemanticError("Intervalo inválido", token.getPosition());
+			throw new SemanticError(I18nConstants.get("invalidInt"), token.getPosition()); 
 		}
 	}
 
 	// 119
 	private void defineTamanhoCadeia(Token token) throws SemanticError {
 		if (tipoConst != TIPO_INT) {
-			throw new SemanticError("Esperava-se uma constante inteira", token.getPosition());
+			throw new SemanticError(I18nConstants.get("constIntExpected"), token.getPosition()); 
 		} else if (Integer.parseInt(valConst) > 255) {
-			throw new SemanticError("Tamanho de cadeia maior que o permitido", token.getPosition());
+			throw new SemanticError(I18nConstants.get("stringLongerThanExpected"), token.getPosition()); 
 		} else {
 			tipoAtual = TIPO_CADEIA;
 			subcategoriaAtual = new SubcategoriaCadeia(Integer.parseInt(valConst));
@@ -507,7 +508,7 @@ public class Semantico implements Constants, NGC {
 	// 120
 	private void defineTamanhoVetor(Token token) throws SemanticError {
 		if (tipoConst != TIPO_INT) {
-			throw new SemanticError("Numero de elementos de vetor deve ser inteiro",
+			throw new SemanticError(I18nConstants.get("vectorSizeMustBeInt"), 
 					token.getPosition());
 		} else {
 			tamanhoVetor = Integer.parseInt(valConst);
@@ -526,14 +527,14 @@ public class Semantico implements Constants, NGC {
 		if (iDJaDeclarado(token)) {
 			ultimoId = token.getLexeme();
 		} else {
-			throw new SemanticError("Identificador não declarado", token.getPosition());
+			throw new SemanticError(I18nConstants.get("idNotDeclared"), token.getPosition()); 
 		}
 	}
 
 	// 127
 	private void verificaTipoExpressao(Token token) throws SemanticError {
 		if (tipoExpressao != TIPO_BOOL && tipoExpressao != TIPO_INT) {
-			throw new SemanticError("Tipo inválido da expressão", token.getPosition());
+			throw new SemanticError(I18nConstants.get("invalidExpressionType"), token.getPosition()); 
 		}/* else { G. Codigo. } */
 	}
 
@@ -542,7 +543,7 @@ public class Semantico implements Constants, NGC {
 		contextoExpressao = EXP_IMPRESSAO;
 		if (tipoExpressao != TIPO_INT && tipoExpressao != TIPO_REAL
 				&& tipoExpressao != TIPO_CARACTERE && tipoExpressao != TIPO_CADEIA) {
-			throw new SemanticError("Tipo inválido para impressão", token.getPosition());
+			throw new SemanticError(I18nConstants.get("invalidPrintingType"), token.getPosition()); 
 		}/* else { G. Codigo. } */
 	}
 
@@ -552,14 +553,14 @@ public class Semantico implements Constants, NGC {
 		if (id.getCategoria() == ID_VAR) {
 			Variavel v = (Variavel) id;
 			if (v.getSubcategoria().getTipoSubCategoria() == TIPO_VETOR) {
-				throw new SemanticError("Vetor precisa ser indexado", token.getPosition());
+				throw new SemanticError(I18nConstants.get("vectorMustBeIndexed"), token.getPosition()); 
 			} else {
 				tipoLadoEsquerdo = v.getSubcategoria().getTipoVar();
 			}
 		} else if (id.getCategoria() == ID_PARAM) {
 			Parametro p = (Parametro) id;
 			if (p.getTipo() == TIPO_VETOR) {
-				throw new SemanticError("Vetor precisa ser indexado", token.getPosition());
+				throw new SemanticError(I18nConstants.get("vectorMustBeIndexed"), token.getPosition()); 
 			} else {
 				tipoLadoEsquerdo = p.getTipo();
 			}
@@ -569,10 +570,10 @@ public class Semantico implements Constants, NGC {
 				tipoLadoEsquerdo = f.getTipoResultado();
 				declarouRetorno = true;
 			} else {
-				throw new SemanticError("Fora do escopo da funçao", token.getPosition());
+				throw new SemanticError(I18nConstants.get("outsideFunction"), token.getPosition()); 
 			}
 		} else {
-			throw new SemanticError("ID deveria ser Variavel, Parametro ou Funcao",
+			throw new SemanticError(I18nConstants.get("idShouldBeVarParamOrFunc"), 
 					token.getPosition());
 		}
 	}
@@ -580,19 +581,19 @@ public class Semantico implements Constants, NGC {
 	// 131
 	private void verificaTiposCompativeis(Token token) throws SemanticError {
 		if (!Regras.podeArmazenar(tipoLadoEsquerdo, tipoExpressao)) {
-			throw new SemanticError("Tipos incompatíveis", token.getPosition());
+			throw new SemanticError(I18nConstants.get("typeMismatch"), token.getPosition()); 
 		}/* else { G. Codigo. } */
 	}
 
 	// 132
 	private void verificaIdIndexado(Token token) throws SemanticError {
 		if (getId(ultimoId).getCategoria() != ID_VAR) {
-			throw new SemanticError("Esperava-se uma variável", token.getPosition());
+			throw new SemanticError(I18nConstants.get("varExpected"), token.getPosition()); 
 		} else {
 			Variavel v = (Variavel) getId(ultimoId);
 			if (v.getSubcategoria().getTipoSubCategoria() != TIPO_VETOR
 					&& v.getSubcategoria().getTipoSubCategoria() != TIPO_CADEIA) {
-				throw new SemanticError("Apenas vetores e cadeias podem ser indexadas",
+				throw new SemanticError(I18nConstants.get("onlyVectorsAndStringsCanBeIndexed"), 
 						token.getPosition());
 			} else {
 				tipoVarIndexada = v.getSubcategoria().getTipoSubCategoria();
@@ -604,7 +605,7 @@ public class Semantico implements Constants, NGC {
 	// 133
 	private void verificaIndice(Token token) throws SemanticError {
 		if (tipoExpressao != TIPO_INT) {
-			throw new SemanticError("Tipo do indice invalido", token.getPosition());
+			throw new SemanticError(I18nConstants.get("invalidIndexType"), token.getPosition()); 
 		} else if (tipoVarIndexada == TIPO_VETOR) {
 			tipoLadoEsquerdo = tipoElementosVetor;
 		} else {
@@ -615,7 +616,7 @@ public class Semantico implements Constants, NGC {
 	// 134
 	private void verificaSeEhProcedimento(Token token) throws SemanticError {
 		if (getId(ultimoId).getCategoria() != ID_PROC) {
-			throw new SemanticError("ID deveria ser procedimento", token.getPosition());
+			throw new SemanticError(I18nConstants.get("idShouldBeProc"), token.getPosition()); 
 		} else {
 			pilhaProcedimentosDeclarados.push((Procedimento) getId(ultimoId));
 		}
@@ -629,32 +630,32 @@ public class Semantico implements Constants, NGC {
 		contextoExpressao = EXP_PAR_ATUAL;
 		Metodo m = pilhaProcedimentosDeclarados.peek();
 		if (m.getNumParam() <= numParamAtuais.peek()) {
-			throw new SemanticError("Parametro formal não existente", token.getPosition());
+			throw new SemanticError(I18nConstants.get("nonExistantParam"), token.getPosition()); 
 		}
 		Parametro param = m.getParametros().get(numParamAtuais.peek());
 		if (!Regras.podeArmazenar(param.getTipo(), tipoExpressao)) {
-			throw new SemanticError("Parametro formal não existente", token.getPosition());
+			throw new SemanticError(I18nConstants.get("nonExistantParam"), token.getPosition()); 
 		}
 	}
 
 	// 136
 	private void verificaNumeroParametros(Token token) throws SemanticError {
 		Metodo m = pilhaProcedimentosDeclarados.pop();
-		assert (m.getNumParam() == numParamAtuais.peek() + 1) : m.getNome() + " precisa de "
-				+ m.getNumParam() + " e tem " + (numParamAtuais.peek() + 1);
+		assert (m.getNumParam() == numParamAtuais.peek() + 1) : m.getNome() + I18nConstants.get("needs") 
+				+ m.getNumParam() + I18nConstants.get("andHas") + (numParamAtuais.peek() + 1); 
 		if (numParamAtuais.pop() + 1 != m.getNumParam()) {
-			throw new SemanticError("Erro na quantidade de parametros", token.getPosition());
+			throw new SemanticError(I18nConstants.get("paramSizeError"), token.getPosition()); 
 		} /* else { G. Codigo. } */
 	}
 
 	// 137
 	private void verificaFimDeChamadaDeMetodo(Token token) throws SemanticError {
 		if (getId(ultimoId).getCategoria() != ID_PROC) {
-			throw new SemanticError("ID deveria ser procedimento", token.getPosition());
+			throw new SemanticError(I18nConstants.get("idShouldBeProc"), token.getPosition()); 
 		} else {
 			Metodo m = (Metodo) getId(ultimoId);
 			if (m.getNumParam() != 0 && numParamAtuais.pop() != m.getNumParam()) {
-				throw new SemanticError("Erro na quantidade de parametros", token.getPosition());
+				throw new SemanticError(I18nConstants.get("paramSizeError"), token.getPosition()); 
 			} /* else { G. Codigo. } */
 		}
 	}
@@ -667,7 +668,7 @@ public class Semantico implements Constants, NGC {
 			inicializaPassagemParametros(token);
 		} else if (contextoExpressao == EXP_IMPRESSAO) {
 			if (!iDJaDeclarado(token)) {
-				throw new SemanticError("Id não declarado", token.getPosition());
+				throw new SemanticError(I18nConstants.get("idNotDeclared"), token.getPosition()); 
 			}
 		}
 	}
@@ -675,7 +676,7 @@ public class Semantico implements Constants, NGC {
 	// 140
 	private void verificaExpressaoRelacional(Token token) throws SemanticError {
 		if (!Regras.podeCompararRelacional(tipoExpressao, tipoExpressaoSimples)) {
-			throw new SemanticError("Operandos incompatíveis", token.getPosition());
+			throw new SemanticError(I18nConstants.get("operandMismatch"), token.getPosition()); 
 		} else {
 			tipoExpressao = TIPO_BOOL;
 		}
@@ -684,7 +685,7 @@ public class Semantico implements Constants, NGC {
 	// 148
 	private void verificaOperadorEOperandoAdd(Token token) throws SemanticError {
 		if (!Regras.isCompativelComOperador(tipoExpressaoSimples, operadorAdd)) {
-			throw new SemanticError("Operador e operando incompatíveis", token.getPosition());
+			throw new SemanticError(I18nConstants.get("operator-operandMismatch"), token.getPosition()); 
 		}
 	}
 
@@ -694,14 +695,14 @@ public class Semantico implements Constants, NGC {
 			tipoExpressaoSimples = Regras.tipoResultanteDeOperacao(tipoExpressaoSimples, tipoTermo,
 					operadorAdd);
 		} else {
-			throw new SemanticError("Operadores incompatíveis", token.getPosition());
+			throw new SemanticError(I18nConstants.get("operatorMismatch"), token.getPosition()); 
 		}
 	}
 
 	// 154
 	private void verificaOperadorEOperandoMult(Token token) throws SemanticError {
 		if (!Regras.isCompativelComOperador(tipoTermo, operadorMult)) {
-			throw new SemanticError("Operador e operando incompatíveis", token.getPosition());
+			throw new SemanticError(I18nConstants.get("operator-operandMismatch"), token.getPosition()); 
 		}
 	}
 
@@ -710,14 +711,14 @@ public class Semantico implements Constants, NGC {
 		if (Regras.podeArmazenar(tipoFator, tipoTermo)) {
 			tipoTermo = Regras.tipoResultanteDeOperacao(tipoFator, tipoTermo, operadorMult);
 		} else {
-			throw new SemanticError("Operadores incompatíveis", token.getPosition());
+			throw new SemanticError(I18nConstants.get("operatorMismatch"), token.getPosition()); 
 		}
 	}
 
 	// 159
 	private void negaExpressao(Token token) throws SemanticError {
 		if (operadorNegacao) {
-			throw new SemanticError("Operadores 'nao' consecutivos", token.getPosition());
+			throw new SemanticError(I18nConstants.get("notOperatorError"), token.getPosition()); 
 		} else {
 			operadorNegacao = true;
 		}
@@ -726,14 +727,14 @@ public class Semantico implements Constants, NGC {
 	// 160
 	private void verificaFatorComNegacao(Token token) throws SemanticError {
 		if (tipoFator != TIPO_BOOL) {
-			throw new SemanticError("Operador 'nao' exige operando booleano", token.getPosition());
+			throw new SemanticError(I18nConstants.get("notOperatorRequiresBoolean"), token.getPosition()); 
 		}
 	}
 
 	// 161
 	private void negativaExpressao(Token token) throws SemanticError {
 		if (operadorUnario) {
-			throw new SemanticError("Operadores unarios consecutivos", token.getPosition());
+			throw new SemanticError(I18nConstants.get("unaryOperatorError"), token.getPosition()); 
 		} else {
 			operadorUnario = true;
 		}
@@ -742,7 +743,7 @@ public class Semantico implements Constants, NGC {
 	// 162
 	private void verificaFatorComNegativo(Token token) throws SemanticError {
 		if (tipoFator != TIPO_INT && tipoFator != TIPO_REAL) {
-			throw new SemanticError("Operador '+/-' exige operando numérico", token.getPosition());
+			throw new SemanticError(I18nConstants.get("mathSignRequiresNum"), token.getPosition()); 
 		}
 	}
 
@@ -755,7 +756,7 @@ public class Semantico implements Constants, NGC {
 	// 167
 	private void verificaSeIdEhFuncao(Token token) throws SemanticError {
 		if (getId(ultimoId).getCategoria() != ID_FUNC) {
-			throw new SemanticError("ID deveria ser funcao", token.getPosition());
+			throw new SemanticError(I18nConstants.get("idShouldBeFunc"), token.getPosition()); 
 		} else {
 			pilhaProcedimentosDeclarados.push((Funcao) getId(ultimoId));
 		}
@@ -764,13 +765,13 @@ public class Semantico implements Constants, NGC {
 	// 168
 	private void comparaNumParams(Token token) throws SemanticError {
 		Funcao f = (Funcao) pilhaProcedimentosDeclarados.pop();
-		assert (f.getNumParam() == numParamAtuais.peek() + 1) : f.getNome() + " precisa de "
-				+ f.getNumParam() + " e tem " + (numParamAtuais.peek() + 1);
+		assert (f.getNumParam() == numParamAtuais.peek() + 1) : f.getNome() + I18nConstants.get("needs") 
+				+ f.getNumParam() + I18nConstants.get("andHas") + (numParamAtuais.peek() + 1); 
 		if (f.getNumParam() == numParamAtuais.pop() + 1) {
 			tipoVar = f.getTipoResultado();
 			/* Codigo para chamada de funcao */
 		} else {
-			throw new SemanticError("Erro na quantidade de parametros", token.getPosition());
+			throw new SemanticError(I18nConstants.get("paramSizeError"), token.getPosition()); 
 		}
 	}
 
@@ -783,7 +784,7 @@ public class Semantico implements Constants, NGC {
 				tipoVar = TIPO_CARACTERE;
 			}
 		} else {
-			throw new SemanticError("Tipo do indice inválido", token.getPosition());
+			throw new SemanticError(I18nConstants.get("invalidIndexType"), token.getPosition()); 
 		}
 	}
 
@@ -793,21 +794,21 @@ public class Semantico implements Constants, NGC {
 		if (id.getCategoria() == ID_VAR) {
 			Variavel v = (Variavel) id;
 			if (v.getSubcategoria().getTipoSubCategoria() == TIPO_VETOR) {
-				throw new SemanticError("Vetor deve ser indexado", token.getPosition());
+				throw new SemanticError(I18nConstants.get("vectorMustBeIndexed"), token.getPosition()); 
 			} else {
 				tipoVar = v.getSubcategoria().getTipoVar();
 			}
 		} else if (id.getCategoria() == ID_PARAM) {
 			Parametro p = (Parametro) id;
 			if (p.getTipo() == TIPO_VETOR) {
-				throw new SemanticError("Vetor deve ser indexado", token.getPosition());
+				throw new SemanticError(I18nConstants.get("vectorMustBeIndexed"), token.getPosition()); 
 			} else {
 				tipoVar = p.getTipo();
 			}
 		} else if (id.getCategoria() == ID_FUNC) {
 			Funcao f = (Funcao) id;
 			if (f.getNumParam() != 0) {
-				throw new SemanticError("Erro na quantidade de parametros", token.getPosition());
+				throw new SemanticError(I18nConstants.get("paramSizeError"), token.getPosition()); 
 			} else {
 				tipoVar = f.getTipoResultado();
 				/* Código para chamada de função */
@@ -816,7 +817,7 @@ public class Semantico implements Constants, NGC {
 			Constante c = (Constante) id;
 			tipoVar = c.getTipo();
 		} else {
-			throw new SemanticError("Esperava-se Variavel, Funcao ou Constante",
+			throw new SemanticError(I18nConstants.get("varFuncOrConstExpected"), 
 					token.getPosition());
 		}
 	}
@@ -830,7 +831,7 @@ public class Semantico implements Constants, NGC {
 	// 173
 	private void setConstantePraFalso() {
 		tipoConst = TIPO_BOOL;
-		valConst = "0";
+		valConst = "0"; 
 	}
 
 	// 172
@@ -842,7 +843,7 @@ public class Semantico implements Constants, NGC {
 	// 174
 	private void setConstantePraTrue() {
 		tipoConst = TIPO_BOOL;
-		valConst = "1";
+		valConst = "1"; 
 	}
 
 	// 175

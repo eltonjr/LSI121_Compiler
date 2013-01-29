@@ -1,6 +1,7 @@
 package lsi.analyser;
 
 import lsi.errors.LexicalError;
+import lsi.i18n.I18nConstants;
 
 public class AnalisadorLexico {
 
@@ -25,8 +26,8 @@ public class AnalisadorLexico {
 				// System.out.println(t.getLexeme());
 			}
 		} catch (LexicalError e) {
-			return e.getMessage() + " em " + e.getPosition();
+			return e.getMessage() + I18nConstants.get("at") + e.getPosition(); 
 		}
-		return "Sem erros";
+		return I18nConstants.get("noErrors"); 
 	}
 }
