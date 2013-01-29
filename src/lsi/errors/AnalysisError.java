@@ -1,6 +1,8 @@
 package lsi.errors;
 
 public class AnalysisError extends Exception {
+	private static final long serialVersionUID = 4144608607387399876L;
+
 	private int position;
 
 	public AnalysisError(String msg, int position) {
