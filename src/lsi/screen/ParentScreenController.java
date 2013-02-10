@@ -36,6 +36,12 @@ public class ParentScreenController implements ActionListener {
 		if (e.getSource() == display.getMenuItemAbout()) {
 		} else if (e.getSource() == display.getMenuItemExit()) {
 			System.exit(0);
+		} else if(e.getSource() == display.getLangPtBR()){
+			Env.setPtBR();
+			display.reload();
+		} else if(e.getSource() == display.getLangEnUS()){
+			Env.setEnUS();
+			display.reload();
 		} else if (e.getSource() == display.getVerifyLexical()) {
 			feedback(Env.getLexicalAnalyser().analyse(display.getText()));
 		} else if (e.getSource() == display.getVerifySyntax()) {

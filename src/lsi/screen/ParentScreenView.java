@@ -6,6 +6,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import lsi.i18n.I18nConstants;
 
@@ -20,6 +21,7 @@ public class ParentScreenView {
 	private JMenu menuLexical;
 	private JMenu menuSyntax;
 	private JMenu menuSemantic;
+	private JMenu menuLanguage;
 
 	private JMenuItem menuItemAbout;
 	private JMenuItem menuItemExit;
@@ -27,6 +29,9 @@ public class ParentScreenView {
 	private JMenuItem verifyLexical;
 	private JMenuItem verifySyntax;
 	private JMenuItem verifySemantic;
+
+	private JMenuItem langPtBR;
+	private JMenuItem langEnUS;
 
 	private JScrollPane scrollPane;
 	
@@ -40,7 +45,17 @@ public class ParentScreenView {
 	}
 
 	private void init() {
-		frame = new JFrame(I18nConstants.get("compiler")); 
+		frame = new JFrame();
+		
+		buildComponents();
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(400, 400);
+		frame.setVisible(true);
+	}
+
+	private void buildComponents() {
+		frame.setTitle(I18nConstants.get("compiler"));
 		
 		textArea = new JTextArea();
 		scrollPane = new JScrollPane(textArea);
@@ -50,18 +65,28 @@ public class ParentScreenView {
 		menuFile = new JMenu(I18nConstants.get("file")); 
 		menuLexical = new JMenu(I18nConstants.get("lexical")); 
 		menuSyntax = new JMenu(I18nConstants.get("syntax")); 
-		menuSemantic = new JMenu(I18nConstants.get("semantic")); 
+		menuSemantic = new JMenu(I18nConstants.get("semantic"));
+		menuLanguage = new JMenu(I18nConstants.get("language"));
 		
 		menuBar.add(menuFile);
 		menuBar.add(menuLexical);
 		menuBar.add(menuSyntax);
 		menuBar.add(menuSemantic);
 		
+		setLangPtBR(new JMenuItem(I18nConstants.get("portuguese")));
+		setLangEnUS(new JMenuItem(I18nConstants.get("english")));
+		menuLanguage.add(getLangPtBR());
+		menuLanguage.add(getLangEnUS());
+		
 		menuItemAbout = new JMenuItem(I18nConstants.get("about")); 
-		menuItemExit = new JMenuItem(I18nConstants.get("exit")); 
+		menuItemExit = new JMenuItem(I18nConstants.get("exit"));
+		
 		menuItemAbout.addActionListener(controller);
 		menuItemExit.addActionListener(controller);
+		langPtBR.addActionListener(controller);
+		langEnUS.addActionListener(controller);
 		
+		menuFile.add(menuLanguage);
 		menuFile.add(menuItemAbout);
 		menuFile.add(menuItemExit);
 		
@@ -75,18 +100,19 @@ public class ParentScreenView {
 		menuLexical.add(getVerifyLexical());
 		menuSyntax.add(getVerifySyntax());
 		menuSemantic.add(getVerifySemantic());
-
+		
 		frame.setJMenuBar(menuBar);
 		frame.add("Center", scrollPane); 
-		frame.add("South", feedbackArea); 
-		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(400, 400);
-		frame.setVisible(true);
+		frame.add("South", feedbackArea);
 	}
 	
 	public String getText(){
 		return textArea.getText();
+	}
+	
+	public void reload(){
+		buildComponents();
+		frame.repaint();
 	}
 	
 	/**************** Setters & Getters *******************/
@@ -141,6 +167,22 @@ public class ParentScreenView {
 
 	public void setCaretPosition(int position) {
 		textArea.setCaretPosition(position);
+	}
+
+	public JMenuItem getLangPtBR() {
+		return langPtBR;
+	}
+
+	public void setLangPtBR(JMenuItem langPtBR) {
+		this.langPtBR = langPtBR;
+	}
+
+	public JMenuItem getLangEnUS() {
+		return langEnUS;
+	}
+
+	public void setLangEnUS(JMenuItem langEnUS) {
+		this.langEnUS = langEnUS;
 	}
 
 }
